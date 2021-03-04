@@ -56,11 +56,11 @@ K8ssandra is distributed as a collection of Helm charts powered by [Cassandra Op
     kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
     kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
 
-    # username=k8ssandra-superuser  password=C7LB7PCjMYTTiAIWs0cl
+    # username=k8ssandra-superuser  password=bzpSkKwcIeGMUcZoP6fZ
 
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw C7LB7PCjMYTTiAIWs0cl status
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw C7LB7PCjMYTTiAIWs0cl ring
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw C7LB7PCjMYTTiAIWs0cl info
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw bzpSkKwcIeGMUcZoP6fZ status
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw bzpSkKwcIeGMUcZoP6fZ ring
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw bzpSkKwcIeGMUcZoP6fZ info
 ```
 
 ### Port Forwarding
@@ -72,6 +72,9 @@ The kubectl port-forward command does not require an Ingress/Traefik to work.
     kubectl port-forward svc/prometheus-operated 9292:9090 &
     kubectl port-forward svc/k8ssandra-reaper-reaper-service 9393:8080 &
 ```
+```bash
+    kubectl port-forward svc/k8ssandra-grafana 9191:80 & kubectl port-forward svc/prometheus-operated 9292:9090 & kubectl port-forward svc/k8ssandra-reaper-reaper-service 9393:8080 &
+```
 
 The K8ssandra services are now available at:
 
@@ -79,7 +82,14 @@ The K8ssandra services are now available at:
 - Grafana: http://127.0.0.1:9191
 - Reaper: http://127.0.0.1:9393/webui
 
-Grafana requires an user & password:
+To change Grafana admin password, use *grafana-cli* inside pod/container:
+
+```bash
+    kubectl exec -it k8ssandra-grafana-5c6d5b8f5f-fcwcl -c grafana -- /bin/sh
+    grafana-cli admin reset-admin-password admin
+```
+
+Grafana factory defaults are supposed to be user (admin) & password (secret).
 
 ```bash
     helm show values k8ssandra/k8ssandra | grep "adminUser"

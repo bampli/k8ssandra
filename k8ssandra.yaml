@@ -20,9 +20,9 @@ cassandra:
     racks:
     - name: default
 kube-prometheus-stack:
-  grafana:
-    adminUser: admin
-    adminPassword: admin123
+  # grafana:
+  #   adminUser: admin
+  #   adminPassword: admin123
 stargate:
   enabled: true
   replicas: 1
