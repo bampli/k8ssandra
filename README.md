@@ -79,7 +79,7 @@ The K8ssandra services are now available at:
 - Grafana: http://127.0.0.1:9191
 - Reaper: http://127.0.0.1:9393/webui
 
-Grafana default is user (admin) & password (secret). Change Grafana admin password with *grafana-cli* directly:
+Grafana default is admin/secret. Change Grafana admin password directly with *grafana-cli*:
 
 ```bash
     kubectl exec -it k8ssandra-grafana-5c6d5b8f5f-fcwcl -c grafana -- /bin/sh
