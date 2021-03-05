@@ -1,5 +1,5 @@
 # k8ssandra
-K8ssandra Starter
+### K8ssandra Starter
 
 Create a Kubernetes Cluster with [K8ssandra](https://github.com/k8ssandra/k8ssandra), an open-source distribution of Apache Cassandra that includes API services and operational tooling.
 
