@@ -48,19 +48,19 @@ K8ssandra is distributed as a collection of Helm charts powered by [Cassandra Op
     helm install -f k8ssandra.yaml k8ssandra k8ssandra/k8ssandra
 ```
 
-### Check
+### First Checks
 
 ```bash
     kubectl get cassandradatacenters
     kubectl describe CassandraDataCenter dc1 | grep "Cassandra Operator Progress:"
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo
-    kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo
+    export USER=$(kubectl get secret k8ssandra-superuser -o jsonpath="{.data.username}" | base64 --decode ; echo)
+    export PASS=$(kubectl get secret k8ssandra-superuser -o jsonpath="{.data.password}" | base64 --decode ; echo)
 
-    # username=k8ssandra-superuser  password=bzpSkKwcIeGMUcZoP6fZ
+    # Ex: username=k8ssandra-superuser  password=bzpSkKwcIeGMUcZoP6fZ
 
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw bzpSkKwcIeGMUcZoP6fZ status
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw bzpSkKwcIeGMUcZoP6fZ ring
-    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u k8ssandra-superuser -pw bzpSkKwcIeGMUcZoP6fZ info
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u $USER -pw $PASS status
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u $USER -pw $PASS ring
+    kubectl exec -it k8ssandra-dc1-default-sts-0 -c cassandra -- nodetool -u $USER -pw $PASS info
 ```
 
 ### Port Forwarding
@@ -72,9 +72,6 @@ The kubectl port-forward command does not require an Ingress/Traefik to work.
     kubectl port-forward svc/prometheus-operated 9292:9090 &
     kubectl port-forward svc/k8ssandra-reaper-reaper-service 9393:8080 &
 ```
-```bash
-    kubectl port-forward svc/k8ssandra-grafana 9191:80 & kubectl port-forward svc/prometheus-operated 9292:9090 & kubectl port-forward svc/k8ssandra-reaper-reaper-service 9393:8080 &
-```
 
 The K8ssandra services are now available at:
 
@@ -82,22 +79,34 @@ The K8ssandra services are now available at:
 - Grafana: http://127.0.0.1:9191
 - Reaper: http://127.0.0.1:9393/webui
 
-To change Grafana admin password, use *grafana-cli* inside pod/container:
+Grafana default is user (admin) & password (secret). Change Grafana admin password with *grafana-cli* directly:
 
 ```bash
     kubectl exec -it k8ssandra-grafana-5c6d5b8f5f-fcwcl -c grafana -- /bin/sh
     grafana-cli admin reset-admin-password admin
 ```
-
-Grafana factory defaults are supposed to be user (admin) & password (secret).
+Helm also shows initial config:
 
 ```bash
     helm show values k8ssandra/k8ssandra | grep "adminUser"
     helm show values k8ssandra/k8ssandra | grep "adminPassword"
 ```
+### Datastax Studio
 
-### Traefik
+Adding the Datastax Studio to the K8ssandra cluster for development.
 
+```bash
+    kubectl apply -n studio apply -f studio.yaml
+
+    export STUDIO_POD_NAME=$(kubectl get pods --namespace studio -l "app=studio-lb" -o jsonpath="{.items[0].metadata.name}")
+    kubectl --namespace studio port-forward $STUDIO_POD_NAME 9091
+```
+
+TODO: set default connection to cassandra.
+
+### Ingress
+
+TODO: Ingress.
 
 ```bash
     helm repo add traefik https://helm.traefik.io/traefik
@@ -106,7 +115,7 @@ Grafana factory defaults are supposed to be user (admin) & password (secret).
     helm install traefik traefik/traefik -n traefik --create-namespace -f traefik.values.yaml
 ```
 
-### Util
+### WIP
 
 ```bash
 

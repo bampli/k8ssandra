@@ -1,0 +1,45 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: reaper-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /reaper(/|$)(.*)
+        backend:
+          serviceName: k8ssandra-cluster-a-reaper-k8ssandra-reaper-service
+          servicePort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: stargate-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /playground
+        backend:
+          serviceName: k8ssandra-cluster-a-dc1-stargate-service
+          servicePort: 8080
+      - path: /graphql
+        backend:
+          serviceName: k8ssandra-cluster-a-dc1-stargate-service
+          servicePort: 8080
+      - path: /graphql-schema
+        backend:
+          serviceName: k8ssandra-cluster-a-dc1-stargate-service
+          servicePort: 8080
+      - path: /v1/auth
+        backend:
+          serviceName: k8ssandra-cluster-a-dc1-stargate-service
+          servicePort: 8081
+      - path: /v2/keyspaces
+        backend:
+          serviceName: k8ssandra-cluster-a-dc1-stargate-service
+          servicePort: 8082

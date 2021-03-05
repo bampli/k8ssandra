@@ -1,0 +1,24 @@
+---
+stargate:
+  enabled: true
+  replicas: 1
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      externalUrl: http://localhost:9090/prometheus
+      routePrefix: /prometheus
+    ingress:
+      enabled: true
+      paths:
+        - /prometheus
+  grafana:
+    adminPassword: secret
+    ingress:
+      enabled: true
+      path: /grafana
+    plugins:
+      - grafana-polystat-panel
+    grafana.ini:
+      server:
+        root_url: http://localhost:3000/grafana
+        serve_from_sub_path: true
