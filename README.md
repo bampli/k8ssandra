@@ -13,7 +13,10 @@ The cluster includes several pods to provide:
 
 ## Google Cloud Platform
 
-Create a GKE 3-node cluster powered by e2-standard-4 / 16G-ram / 4-vcpu / 32G-disk.
+Tests Ok with GKE 3-node clusters powered by:
+
+- **test 1**: e2-standard-4 / 16G-ram / 4-vcpu / 32G-disk.
+- **test 2**: n1-standard-2 / 7.5G-ram / 2-vcpu / 32G-disk.
 
 ### Storage Class
 
@@ -91,18 +94,6 @@ Helm also shows initial config:
     helm show values k8ssandra/k8ssandra | grep "adminUser"
     helm show values k8ssandra/k8ssandra | grep "adminPassword"
 ```
-### Datastax Studio
-
-Adding the Datastax Studio to the K8ssandra cluster for development.
-
-```bash
-    kubectl apply -n studio apply -f studio.yaml
-
-    export STUDIO_POD_NAME=$(kubectl get pods --namespace studio -l "app=studio-lb" -o jsonpath="{.items[0].metadata.name}")
-    kubectl --namespace studio port-forward $STUDIO_POD_NAME 9091
-```
-
-TODO: set default connection to cassandra.
 
 ### Ingress
 
